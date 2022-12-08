@@ -12,10 +12,11 @@ import CustomSidebarMenu from './CustomSidebarMenu';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from 'react-redux';
 import { store } from './src/store';
-
+import { LogBox } from 'react-native';
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
-
+LogBox.ignoreLogs(['Warning: ...']);
+LogBox.ignoreAllLogs();
 
 export default function App() {
   const [headerShown, setHeaderShown] = React.useState(false);
@@ -36,13 +37,17 @@ export default function App() {
         screenOptions={{swipeEnabled: headerShown, headerShown: headerShown, drawerStyle: { paddingTop: 20 } }}
         drawerContent={(props) => <CustomSidebarMenu {...props} />}>
         <Drawer.Screen name="Login" component={PassingValues}
-          options={{
-            title: 'Login'
-          }}
+         options={{
+          drawerLabel: () => null,
+          title: null,
+          drawerIcon: () => null
+      }}
         />
          <Drawer.Screen name="Register" component={RegisterVal}
-          options={{
-            title: 'Register'
+            options={{
+              drawerLabel: () => null,
+              title: null,
+              drawerIcon: () => null
           }}
         />
         <Drawer.Screen name="Home" component={HomeScreen}

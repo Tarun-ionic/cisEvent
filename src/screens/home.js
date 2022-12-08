@@ -8,8 +8,8 @@ const Stack = createNativeStackNavigator();
 
 const RednersItem = (props) => <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Button
-            onPress={() => props.navigation.navigate('Setting')}
-            title="Go to setting"
+            onPress={() => props.navigation.navigate('Profile')}
+            title="Go to profile"
         />
     </View>
 

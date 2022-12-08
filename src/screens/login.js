@@ -25,6 +25,14 @@ export default LoginScreen = ({ props, setHeaderShown }) => {
     }
 
     useEffect(()=>{
+        let getToken = AsyncStorage.getItem('accesstoken');
+        if(getToken && getToken != undefined){
+            props.navigation.navigate('Home');
+            setHeaderShown(true);
+        }
+    },[])
+
+    useEffect(()=>{
         if(authData?.data?.error){
             setErrorMessage(true, authData?.data?.message);
         } if(authData?.data?.data) {
@@ -32,7 +40,7 @@ export default LoginScreen = ({ props, setHeaderShown }) => {
             setHeaderShown(true);
             console.log('authData?.data', authData?.data);
             AsyncStorage.setItem('accessToken', authData?.data.data.accessToken)
-            props.navigation.navigate('Home')
+            props.navigation.navigate('Home');
         }
     },[authData])
 

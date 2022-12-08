@@ -35,7 +35,6 @@ const CustomSidebarMenu = (props) => {
           fontSize: 18,
           fontWeight:'800',
           marginTop: 20,
-          marginBottom: 20,
           textAlign: 'center'
         }}>
         My profile
@@ -63,7 +62,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 100 / 2,
-    backgroundColor:'red',
     alignSelf: 'center',
   },
   iconStyle: {
