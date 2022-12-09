@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-export function jsonAuthHeader() {
-    let user = AsyncStorage.getItem("user");
-  
-    if (user && user.token) {
+export async function jsonAuthHeader() {
+    let userToken = await AsyncStorage.getItem("accessToken");
+    console.log('token', userToken)
+    if (userToken) {
       return {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + user.token,
+        Authorization: "Bearer " + userToken,
       };
     } else {
       return {};
@@ -13,12 +13,11 @@ export function jsonAuthHeader() {
   }
   
   export function formAuthHeader() {
-    let user = AsyncStorage.getItem("user");
-  
-    if (user && user.token) {
+    let userToken = AsyncStorage.getItem("accessToken");
+    if (userToken) {
       return {
         "Content-Type": "multipart/form-data",
-        Authorization: "Bearer " + user.token,
+        Authorization: "Bearer " + userToken,
       };
     } else {
       return {};

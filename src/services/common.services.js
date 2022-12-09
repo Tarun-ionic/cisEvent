@@ -29,10 +29,11 @@ export async function withTokenPost(apiName, data) {
   let reqOptions = {
     method: "POST",
     url: `${apiUrl + apiName}`,
-    headers: AuthHeaderJson,
+    headers: await jsonAuthHeader(),
     data: data,
   };
-  const response = await axios.request(reqOptions);
+  console.log('reqOptions', reqOptions)
+  const response = await axios.request(reqOptions).catch(error=>error.response);
   return response.data;
 }
 

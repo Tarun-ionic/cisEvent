@@ -25,12 +25,39 @@ export default LoginScreen = ({ props, setHeaderShown }) => {
     }
 
     useEffect(()=>{
-        let getToken = AsyncStorage.getItem('accesstoken');
+        checkUserToken();        
+    },[])
+
+    const checkUserToken = async()=>{
+        let getToken =  await AsyncStorage.getItem('accessToken');
         if(getToken && getToken != undefined){
             props.navigation.navigate('Home');
             setHeaderShown(true);
         }
-    },[])
+    }
+
+    const storeData = async (storageString, value) => {
+        try {
+            const jsonValue = JSON.stringify(value)
+            await AsyncStorage.setItem(storageString, jsonValue);
+            console.log('data store in local storgae')
+        } catch (e) {
+            console.log('error in storeData', e);
+        }
+
+    }
+
+
+    const getData = async (storageString) => {
+        try {
+            const jsonValue = await AsyncStorage.getItem(storageString);
+            if (jsonValue) {
+                return JSON.parse(jsonValue);
+            }
+        } catch (e) {
+            console.log('error in getData', e);
+        }
+    }
 
     useEffect(()=>{
         if(authData?.data?.error){
@@ -40,6 +67,7 @@ export default LoginScreen = ({ props, setHeaderShown }) => {
             setHeaderShown(true);
             console.log('authData?.data', authData?.data);
             AsyncStorage.setItem('accessToken', authData?.data.data.accessToken)
+            // storeData('accessToken', authData?.data.data.accessToken);
             props.navigation.navigate('Home');
         }
     },[authData])
