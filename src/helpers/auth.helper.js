@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export async function jsonAuthHeader() {
     let userToken = await AsyncStorage.getItem("accessToken");
-    console.log('token', userToken)
     if (userToken) {
       return {
         "Content-Type": "application/json",

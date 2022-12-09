@@ -7,60 +7,93 @@ import {
     ScrollView,
     Image,
     Text,
+    FlatList,
+    TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { getEventsData } from '../slices/event.slice';
+import { getEventLikeUpdate, getEventsData } from '../slices/event.slice';
 import { useDispatch, useSelector } from 'react-redux';
-
+const apiUrl = "https://pdng1.elb.cisinlive.com/";
 
 export default EventsScreen = (props) => {
     const dispatch = useDispatch();
-    const eventData = useSelector(state=>state.events);
-    const [eventsData, setEventsData] = useState([]);
-    console.log('eventData', eventData);
+    const eventData = useSelector(state => state.events.data?.data.data);
+    const event = useSelector(state => state.events);
+    const getProfile = useSelector(state => state.user.data?.data)
 
-    useEffect(()=>{
-        if(eventData?.data?.error){
+    useEffect(() => {
+        if (eventData?.data?.error) {
             console.log('events data ', eventData?.data?.error)
-        } if(eventData?.data?.data){
-            console.log('events data ', eventData?.data?.data)
         }
-    },[eventData])
+    }, [eventData])
+
+    useEffect(() => {
+        dispatch(getEventsData({}));
+    }, [])
 
     useEffect(()=>{
-        dispatch(getEventsData({}));
-    },[])
+        console.log('event ', event)
+        if(event.status == 'fulfilled' && event.apiName == 'getLikesUpdate'){
+            dispatch(getEventsData({}));
+        }
+    },[event])
+
+    const updateLikes = (id) => {
+        dispatch(getEventLikeUpdate({ 'id': id }))
+    }
+
 
 
     return (
         <SafeAreaView>
-            <ScrollView>
-                <View style={{ justifyContent: 'center', paddingBottom: 20 }}>
-                    <View style={styles.boxcontainer}>
-                        <Image style={styles.imageView} source={require('../assets/user.png')} />
-                        <View>
-                            <Text style={styles.titleStyling}>Event title here !!! dfs sadfsd asfd</Text>
-                            <Text style={styles.eventDesc}>Event descriptions here !!! Event descriptions here !!! Event descriptions here !!!</Text>
-                        </View>
-                        <View style={styles.likeIconStyling}>
-                            <Icon
-                                size={20}
-                                color='red'
-                                name="heart"
-                            />
-                            <Text style={{ marginLeft: 5 }}>10</Text>
-                        </View>
-                        <View style={styles.intrestedStyling}>
-                            <Icon
-                                size={20}
-                                color='#000'
-                                name="bookmark"
-                            />
-                            <Text style={{ marginLeft: 7 }}>Intrested</Text>
+            {/* <ScrollView> */}
+           <FlatList
+                data={eventData ? eventData : []}
+                renderItem={({ item }) => (
+                    <View style={{ justifyContent: 'center', paddingBottom: 20 }}>
+                        {/* {console.log('renderItem', item)} */}
+                        <View style={styles.boxcontainer}>
+                            <Image style={styles.imageView} source={{ uri: apiUrl + item.file }} />
+                            <View>
+                                <Text style={styles.titleStyling}>{item.title}</Text>
+                                <Text numberOfLines={6} style={styles.eventDesc}>{item.description}</Text>
+                            </View>
+                            {item.likes.includes(getProfile._id) ?
+                                <View style={styles.likeIconStyling}>
+                                    <TouchableOpacity onPress={()=>updateLikes(item._id)}>
+                                        <Icon
+                                            size={20}
+                                            color='red'
+                                            name="heart"
+                                        />
+                                    </TouchableOpacity>
+                                    <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
+                                </View> :
+                                <View style={styles.likeIconStyling}>
+                                    <TouchableOpacity onPress={()=>updateLikes(item._id)}>
+                                        <Icon
+                                            size={20}
+                                            color='#000'
+                                            name="heart-o"
+                                        />
+                                    </TouchableOpacity>
+                                    <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
+                                </View>
+                            }
+
+                            <View style={styles.intrestedStyling}>
+                                <Icon
+                                    size={20}
+                                    color='#000'
+                                    name="bookmark"
+                                />
+                                <Text style={{ marginLeft: 7 }}>Intrested</Text>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </ScrollView>
+                )}
+            />
+            {/* </ScrollView> */}
         </SafeAreaView>
     );
 };
@@ -101,11 +134,11 @@ const styles = StyleSheet.create({
     },
     intrestedStyling: {
         position: 'absolute',
-        borderWidth:1,
-        padding:5,
+        borderWidth: 1,
+        padding: 5,
         flexDirection: 'row',
         bottom: 7,
         right: '2%',
-        borderRadius:5
+        borderRadius: 5
     }
 })

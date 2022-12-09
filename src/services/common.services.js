@@ -10,9 +10,9 @@ export async function withTokenGet(apiName) {
   let reqOptions = {
     method: "GET",
     url: `${apiUrl + apiName}`,
-    headers: AuthHeaderJson,
+    headers: await jsonAuthHeader(),
   };
-  const response = await axios.request(reqOptions);
+  const response = await axios.request(reqOptions).catch(error=>error.response);;
   return response.data;
 }
 
@@ -32,7 +32,6 @@ export async function withTokenPost(apiName, data) {
     headers: await jsonAuthHeader(),
     data: data,
   };
-  console.log('reqOptions', reqOptions)
   const response = await axios.request(reqOptions).catch(error=>error.response);
   return response.data;
 }
