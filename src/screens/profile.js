@@ -1,6 +1,7 @@
-
-
 import React, { useEffect } from 'react';
+import {ImagePicker} from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+
 import {
     SafeAreaView,
     StyleSheet,
@@ -16,61 +17,127 @@ import {
 import CheckBox from '@react-native-community/checkbox';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRegister } from '../slices/auth.slice';
+import { updateProfile, getProfile, updateProfileImg } from '../slices/user.slice';
+import MultiSelect from 'react-native-multiple-select';
+const apiUrl = "https://pdng1.elb.cisinlive.com/";
 
-export default ProfileScreen = ({ props }) => {
+export default ProfileScreen = ( props ) => {
     const dispatch = useDispatch();
-    const registerData = useSelector(state => state.auth);
+    const getProfileData = useSelector(state => state.user.data?.data);
+    console.log('getProfileData', getProfileData)
+    const profile = useSelector(state => state.user);
     const [name, onNameChange] = React.useState(null);
     const [email, onEmailChange] = React.useState(null);
     const [mobile, onMobileChange] = React.useState(null);
-    const [hobbies, onhobbiesChange] = React.useState(null);
-    const [about, onaboutChange] = React.useState(null);
-    const [title, ontitleChange] = React.useState(null);
-    const [topic, ontopicChange] = React.useState(null);
-    const [topicdesc, ontopicdescChange] = React.useState(null);
     const [address, onaddressChange] = React.useState(null);
     const [state, onstateChange] = React.useState(null);
+    const [imagePath, setimagePath] = React.useState(null);
     const [zipcode, onzipcodeChange] = React.useState(null);
-    const [company, oncompanyChange] = React.useState(null);
+    const [city, oncityChange] = React.useState(null);
     const [errorFlag, setErrorFlag] = React.useState(false);
     const [error, setError] = React.useState(null);
     const [isSelected, setSelection] = React.useState(false);
+
+    const [selectedItem, setSelectedItem] = React.useState([]);
 
     const setErrorMessage = (status, errorMessage) => {
         setErrorFlag(status);
         setError(errorMessage);
     }
 
+    const onSelectedItemsChange = (selectedItems) => {
+        setSelectedItem(selectedItems)
+    };
+
+    const items = [{
+        id: 'English',
+        name: 'English'
+    }, {
+        id: 'Hindi',
+        name: 'Hindi'
+    }
+    ];
+
     const openTandC = async () => {
         await Linking.openURL('https://vesperr-react.netlify.app/terms-and-conditions')
     }
 
-    const openCamera = () => {
+    const openCamera = async () => {
+        const options = {
+          title: 'Choose Option',
+          storageOptions: {
+            skipBackup: true,
+            path: 'images',
+          },
+        };
+       await launchCamera(options, response => {
+          if (response.didCancel) {
+            console.log('User cancelled image picker');
+          } else if (response.error) {
+            console.log('ImagePicker Error: ', response.error);
+          } else if (response.customButton) {
+            console.log('User tapped custom button: ', response.customButton);
+          } else {
+            let formData = new FormData();
+            formData.append('image', {uri:response.assets[0].uri,name:response.assets[0].fileName,type:response.assets[0].type})
+            console.log('form data', JSON.stringify(formData))
+            dispatch(updateProfileImg(formData));
+          }
+        });
+      };
 
-    }
 
-    const onRegister = () => {
-        if (name && email && mobile && password && confirmpassword) {
+    useEffect(()=>{
+        if(profile.status == 'fulfilled' && profile.apiName == 'getProfileUpdate'){
+            props.navigation.navigate('Home')
+        }
+        if(profile.status == 'fulfilled' && profile.apiName == 'profileImg'){
+            console.log('asldasdas', profile)
+        }
+    },[profile])
+
+    useEffect(() => {
+        if (getProfileData) {
+            onNameChange(getProfileData.name);
+            onEmailChange(getProfileData.email);
+            onMobileChange(getProfileData.mobile);
+            onaddressChange(getProfileData.address);
+            oncityChange(getProfileData.city);
+            onstateChange(getProfileData.state);
+            onzipcodeChange(getProfileData.zipcode);
+            setSelection(getProfileData.tNc);
+            setSelectedItem(getProfileData.language);
+            setimagePath(getProfileData.image)
+        }
+    }, [getProfileData])
+
+
+    const updateUserProfile = () => {
+        if (name && email && mobile) {
             const reg = /^[0]?[789]\d{9}$/;
             const validRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
             if (reg.test(mobile) === false) {
                 setErrorMessage(true, 'Mobile number is not valid.');
-            } else if (password !== confirmpassword) {
-                setErrorMessage(true, 'Passwoad and confirm password should be same.');
             } else if (validRegex.test(email) === false) {
                 setErrorMessage(true, 'invalid email address.');
             }
             else {
                 if (isSelected) {
                     setErrorMessage(false, null);
-                    const registerData = {
-                        'name': name,
-                        'email': email,
-                        'mobile': mobile,
-                        'password': password,
-                        'tNc': isSelected
-                    };
-                    dispatch(getRegister(registerData))
+                    let reqData = {
+                        "name": name,
+                        "mobile": mobile,
+                        "email": email,
+                        "address": address,
+                        "state": state,
+                        "city": city,
+                        "zipcode": zipcode,
+                        "language": selectedItem,
+                        "tNc": isSelected,
+                        "_id": getProfileData._id,
+                        "image": getProfileData.image
+                    }
+                    dispatch(updateProfile(reqData))
                 } else {
                     setErrorMessage(true, 'Please check terms and conditions.');
                 }
@@ -86,14 +153,16 @@ export default ProfileScreen = ({ props }) => {
                 <View style={{ justifyContent: 'center' }}>
                     <TouchableOpacity onPress={() => { openCamera() }}>
                         <View style={styles.imageView}>
-                            <Image
+                            {imagePath ? <Image
+                                source={{ uri: apiUrl + imagePath }}
+                                style={styles.sideMenuProfileIcon}
+                            /> :  <Image
                                 source={require('../assets/user.png')}
                                 style={styles.sideMenuProfileIcon}
-                            />
+                            />}
+                           
                         </View>
                     </TouchableOpacity>
-
-
 
                     <TextInput
                         style={styles.input}
@@ -116,36 +185,6 @@ export default ProfileScreen = ({ props }) => {
                     />
                     <TextInput
                         style={styles.input}
-                        onChangeText={onhobbiesChange}
-                        placeholder="Your Hobbies"
-                        value={hobbies}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={onaboutChange}
-                        placeholder="About You"
-                        value={about}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={ontitleChange}
-                        placeholder="Title"
-                        value={title}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={ontopicChange}
-                        placeholder="Topic"
-                        value={topic}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={ontopicdescChange}
-                        placeholder="Topic description"
-                        value={topicdesc}
-                    />
-                    <TextInput
-                        style={styles.input}
                         onChangeText={onaddressChange}
                         placeholder="Address"
                         value={address}
@@ -164,13 +203,38 @@ export default ProfileScreen = ({ props }) => {
                     />
                     <TextInput
                         style={styles.input}
-                        onChangeText={oncompanyChange}
-                        placeholder="Company name*"
-                        value={company}
+                        onChangeText={oncityChange}
+                        placeholder="City"
+                        value={city}
                     />
 
                     {errorFlag && <View><Text style={{ color: 'red', marginLeft: 12 }}> {error} </Text>
                     </View>}
+
+                    <View style={{ flex: 1 , width:'94%', marginLeft: 12}}>
+                        <MultiSelect
+                            hideTags
+                            items={items}
+                            uniqueKey="id"
+                            // ref={(component) => { this.multiSelect = component }}
+                            onSelectedItemsChange={onSelectedItemsChange}
+                            selectedItems={selectedItem}
+                            selectText={'   Select language : '+selectedItem}
+                            searchInputPlaceholderText="Search language..."
+                            onChangeInput={(text) => console.log(text)}
+                            altFontFamily="ProximaNova-Light"
+                            tagRemoveIconColor="#CCC"
+                            tagBorderColor="#CCC"
+                            tagTextColor="#CCC"
+                            selectedItemTextColor="#CCC"
+                            selectedItemIconColor="#CCC"
+                            itemTextColor="#000"
+                            displayKey="name"
+                            searchInputStyle={{ color: '#000' }}
+                            submitButtonColor="#000"
+                            submitButtonText="Submit"
+                        />
+                       </View>
 
                     <View style={styles.checkboxContainer}>
                         <CheckBox
@@ -184,7 +248,7 @@ export default ProfileScreen = ({ props }) => {
 
                     <View style={styles.buttonStyle}>
                         <Button
-                            onPress={() => { onRegister() }}
+                            onPress={() => { updateUserProfile() }}
                             title="Update"
                         />
 

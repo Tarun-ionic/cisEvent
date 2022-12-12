@@ -50,10 +50,10 @@ export async function withTokenPut(apiName, data) {
   let reqOptions = {
     method: "PUT",
     url: `${apiUrl + apiName}`,
-    headers: AuthHeaderJson,
+    headers: await jsonAuthHeader(),
     data: data,
   };
-  const response = await axios.request(reqOptions);
+  const response = await axios.request(reqOptions).catch(error=>error.response);
   return response.data;
 }
 
@@ -72,10 +72,10 @@ export async function withTokenFormPost(apiName, data) {
   let reqOptions = {
     method: "POST",
     url: `${apiUrl + apiName}`,
-    headers: AuthHeaderForm,
+    headers: await formAuthHeader(),
     data: data,
   };
-  const response = await axios.request(reqOptions);
+  const response = await axios.request(reqOptions).catch(error=>error.response);
   return response.data;
 }
 

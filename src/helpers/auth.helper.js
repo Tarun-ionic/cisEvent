@@ -11,8 +11,8 @@ export async function jsonAuthHeader() {
     }
   }
   
-  export function formAuthHeader() {
-    let userToken = AsyncStorage.getItem("accessToken");
+  export async function formAuthHeader() {
+    let userToken = await AsyncStorage.getItem("accessToken");
     if (userToken) {
       return {
         "Content-Type": "multipart/form-data",
