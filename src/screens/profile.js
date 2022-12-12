@@ -24,7 +24,6 @@ const apiUrl = "https://pdng1.elb.cisinlive.com/";
 export default ProfileScreen = ( props ) => {
     const dispatch = useDispatch();
     const getProfileData = useSelector(state => state.user.data?.data);
-    console.log('getProfileData', getProfileData)
     const profile = useSelector(state => state.user);
     const [name, onNameChange] = React.useState(null);
     const [email, onEmailChange] = React.useState(null);
@@ -92,7 +91,6 @@ export default ProfileScreen = ( props ) => {
             props.navigation.navigate('Home')
         }
         if(profile.status == 'fulfilled' && profile.apiName == 'profileImg'){
-            console.log('asldasdas', profile)
         }
     },[profile])
 

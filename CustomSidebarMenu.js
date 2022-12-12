@@ -30,8 +30,8 @@ const CustomSidebarMenu = (props) => {
     <SafeAreaView style={{ flex: 1 }}>
       <TouchableOpacity onPress={() => { props.navigation.navigate('Setting') }}>
         <View>
-          {getProfileData.image ? <Image
-            source={{ uri: apiUrl + getProfileData.image }}
+          {getProfileData?.image ? <Image
+            source={{ uri: apiUrl + getProfileData?.image }}
             style={styles.sideMenuProfileIcon}
           /> : <Image
             source={require('./src/assets/launch_screen.png')}
@@ -45,7 +45,7 @@ const CustomSidebarMenu = (props) => {
               marginTop: 20,
               textAlign: 'center'
             }}>
-            {getProfileData.name? getProfileData.name : 'User Profile'}
+            {getProfileData?.name? getProfileData?.name : 'User Profile'}
           </Text>
         </View>
       </TouchableOpacity>
