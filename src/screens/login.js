@@ -31,8 +31,8 @@ export default LoginScreen = ({ props, setHeaderShown }) => {
     const checkUserToken = async()=>{
         let getToken =  await AsyncStorage.getItem('accessToken');
         if(getToken && getToken != undefined){
-            props.navigation.navigate('Home');
             setHeaderShown(true);
+            props.navigation.navigate('Home');
         }
     }
 

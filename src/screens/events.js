@@ -10,12 +10,17 @@ import {
     FlatList,
     TouchableOpacity,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { getEventLikeUpdate, getEventsData } from '../slices/event.slice';
+// import Icon from 'react-native-vector-icons/FontAwesome';
+import { getEventLikeUpdate, getEventInterestUpdate, getEventsData } from '../slices/event.slice';
 import { useDispatch, useSelector } from 'react-redux';
 const apiUrl = "https://pdng1.elb.cisinlive.com/";
+import EventDetialsScreen from './eventdetails';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-export default EventsScreen = (props) => {
+const Stack = createNativeStackNavigator();
+
+export default EventsScreen = ({props, setHeaderShown}) => {
     const dispatch = useDispatch();
     const eventData = useSelector(state => state.events.data?.data.data);
     const event = useSelector(state => state.events);
@@ -31,36 +36,44 @@ export default EventsScreen = (props) => {
         dispatch(getEventsData({}));
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log('event ', event)
-        if(event.status == 'fulfilled' && event.apiName == 'getLikesUpdate'){
+        if (event.status == 'fulfilled' && (event.apiName == 'getLikesUpdate' || event.apiName == 'getInterestUpdate')) {
             dispatch(getEventsData({}));
         }
-    },[event])
+    }, [event])
 
     const updateLikes = (id) => {
         dispatch(getEventLikeUpdate({ 'id': id }))
     }
 
+    const updateInterested = (id) => {
+        dispatch(getEventInterestUpdate({ 'event_id': id }))
+    }
+
+    const EventDetailScreen = props => (
+        <EventDetialsScreen props={props} setHeaderShown={setHeaderShown} />
+      );
 
 
+
+  const ShoweventScreen = ()=>{
     return (
         <SafeAreaView>
-            {/* <ScrollView> */}
-           <FlatList
+            <FlatList
                 data={eventData ? eventData : []}
                 renderItem={({ item }) => (
                     <View style={{ justifyContent: 'center', paddingBottom: 20 }}>
-                        {/* {console.log('renderItem', item)} */}
+                        <TouchableOpacity onPress={() =>{ props.navigation.navigate('Details',{'detailsItem':item})}}>
                         <View style={styles.boxcontainer}>
                             <Image style={styles.imageView} source={{ uri: apiUrl + item.file }} />
                             <View>
                                 <Text style={styles.titleStyling}>{item.title}</Text>
-                                <Text numberOfLines={6} style={styles.eventDesc}>{item.description}</Text>
+                                <Text numberOfLines={5} style={styles.eventDesc}>{item.description}</Text>
                             </View>
                             {item.likes.includes(getProfile._id) ?
                                 <View style={styles.likeIconStyling}>
-                                    <TouchableOpacity onPress={()=>updateLikes(item._id)}>
+                                    <TouchableOpacity onPress={() => updateLikes(item._id)}>
                                         <Icon
                                             size={20}
                                             color='red'
@@ -70,11 +83,11 @@ export default EventsScreen = (props) => {
                                     <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
                                 </View> :
                                 <View style={styles.likeIconStyling}>
-                                    <TouchableOpacity onPress={()=>updateLikes(item._id)}>
+                                    <TouchableOpacity onPress={() => updateLikes(item._id)}>
                                         <Icon
                                             size={20}
                                             color='#000'
-                                            name="heart-o"
+                                            name="heart-outline"
                                         />
                                     </TouchableOpacity>
                                     <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
@@ -87,14 +100,52 @@ export default EventsScreen = (props) => {
                                     color='#000'
                                     name="bookmark"
                                 />
-                                <Text style={{ marginLeft: 7 }}>Intrested</Text>
+                                {item.interested_users.includes(getProfile._id) ?
+                                    <TouchableOpacity onPress={() => updateInterested(item._id)}>
+                                        <Text style={{ marginLeft: 7 }}>Interested</Text>
+                                    </TouchableOpacity> :
+                                    <TouchableOpacity onPress={() => updateInterested(item._id)}>
+                                        <Text style={{ marginLeft: 7 }}>Add to interest</Text>
+                                    </TouchableOpacity>}
                             </View>
                         </View>
+                        </TouchableOpacity>
                     </View>
                 )}
             />
-            {/* </ScrollView> */}
         </SafeAreaView>
+    );
+  }
+
+    return (
+        <>
+            <Stack.Navigator initialRouteName="Events"
+                screenOptions={{
+                    headerShown: true,
+                    headerBackButtonMenuEnabled: false,
+                }}>
+                <Stack.Screen
+                    name="Events"
+                    component={ShoweventScreen}
+                    options={({}) => ({
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
+                            <Icon
+                                size={30}
+                                style={{ marginRight: 15 }}
+                                name="menu-outline"
+                            />
+                        </TouchableOpacity>
+                        ),
+                      })}
+                />
+                <Stack.Screen
+                    name="Details"
+                    component={EventDetailScreen}
+                />
+            </Stack.Navigator>
+
+        </>
     );
 };
 

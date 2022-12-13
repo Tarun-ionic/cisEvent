@@ -6,6 +6,8 @@ import {withOutTokenGet, withoutTokenPost, withTokenPost, withTokenGet} from '..
 
 export const getEventsData = createAsyncThunk("GET_EVENTS",(reqParam) => withTokenPost(eventApi.EVENTS+'?page=1', reqParam));
 export const getEventLikeUpdate = createAsyncThunk("UPDATE_LIKE",(reqParam) => withTokenPost(eventApi.UPDATELIKE, reqParam));
+export const getEventInterestUpdate = createAsyncThunk("UPDATE_INTEREST_UPDATE",(reqParam) => withTokenPost(eventApi.UPDATE_INTEREST, reqParam));
+
     const initialState = {
         status: null,
         data: null,
@@ -37,6 +39,18 @@ export const getEventLikeUpdate = createAsyncThunk("UPDATE_LIKE",(reqParam) => w
                 state.apiName = 'getLikesUpdate'
             },
             [getEventLikeUpdate.rejected]: (state, action) => {
+                state.status = "rejected";
+                state.data = action.payload;
+            },
+            [getEventInterestUpdate.pending]: (state, action) => {
+                state.status = "pending";
+            },
+            [getEventInterestUpdate.fulfilled]: (state, action) => {
+                state.status = "fulfilled";
+                state.data = action.payload;
+                state.apiName = 'getInterestUpdate'
+            },
+            [getEventInterestUpdate.rejected]: (state, action) => {
                 state.status = "rejected";
                 state.data = action.payload;
             },

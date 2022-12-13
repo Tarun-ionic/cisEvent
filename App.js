@@ -16,12 +16,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from 'react-redux';
 import { store } from './src/store';
 import { LogBox } from 'react-native';
+import EventDetialsScreen from './src/screens/eventdetails';
+
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 LogBox.ignoreLogs(['Warning: ...']);
 LogBox.ignoreAllLogs();
 
 export default function App() {
+
   const [headerShown, setHeaderShown] = React.useState(false);
 
   const PassingValues = props => (
@@ -32,27 +35,18 @@ export default function App() {
     <RegisterScreen props={props} setHeaderShown={setHeaderShown} />
   );
 
+  const EventScreen = props => (
+    <EventsScreen props={props} setHeaderShown={setHeaderShown} />
+  );
+
 
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Drawer.Navigator
+        <Drawer.Navigator initialRouteName='Login'
           screenOptions={{ swipeEnabled: headerShown, headerShown: headerShown, drawerStyle: { paddingTop: 20 } }}
           drawerContent={(props) => <CustomSidebarMenu {...props} />}>
-          <Drawer.Screen name="Login" component={PassingValues}
-            options={{
-              drawerLabel: () => null,
-              title: null,
-              drawerIcon: () => null
-            }}
-          />
-          <Drawer.Screen name="Register" component={RegisterVal}
-            options={{
-              drawerLabel: () => null,
-              title: null,
-              drawerIcon: () => null
-            }}
-          />
+         
           <Drawer.Screen name="Home" component={HomeScreen}
             options={{
               title: 'Home',
@@ -103,9 +97,10 @@ export default function App() {
               ),
             }}
           />
-          <Drawer.Screen name="Events" component={EventsScreen}
+          <Drawer.Screen name="Events" component={EventScreen}
             options={{
               title: 'Events',
+              headerShown : false,
               drawerIcon: ({ focused, size }) => (
                 <Icon
                   size={20}
@@ -126,6 +121,21 @@ export default function App() {
                   name="bell"
                 />
               ),
+            }}
+          />
+
+          <Drawer.Screen name="Register" component={RegisterVal}
+            options={{
+              drawerLabel: () => null,
+              title: null,
+              drawerIcon: () => null
+            }}
+          />
+           <Drawer.Screen name="Login" component={PassingValues}
+            options={{
+              drawerLabel: () => null,
+              title: null,
+              drawerIcon: () => null
             }}
           />
         </Drawer.Navigator>
