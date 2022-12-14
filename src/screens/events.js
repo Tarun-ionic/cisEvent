@@ -17,10 +17,10 @@ const apiUrl = "https://pdng1.elb.cisinlive.com/";
 import EventDetialsScreen from './eventdetails';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import Video from 'react-native-video';
 const Stack = createNativeStackNavigator();
 
-export default EventsScreen = ({props, setHeaderShown}) => {
+export default EventsScreen = ({ props, setHeaderShown }) => {
     const dispatch = useDispatch();
     const eventData = useSelector(state => state.events.data?.data.data);
     const event = useSelector(state => state.events);
@@ -53,69 +53,71 @@ export default EventsScreen = ({props, setHeaderShown}) => {
 
     const EventDetailScreen = props => (
         <EventDetialsScreen props={props} setHeaderShown={setHeaderShown} />
-      );
+    );
 
 
 
-  const ShoweventScreen = ()=>{
-    return (
-        <SafeAreaView>
-            <FlatList
-                data={eventData ? eventData : []}
-                renderItem={({ item }) => (
-                    <View style={{ justifyContent: 'center', paddingBottom: 20 }}>
-                        <TouchableOpacity onPress={() =>{ props.navigation.navigate('Details',{'detailsItem':item})}}>
-                        <View style={styles.boxcontainer}>
-                            <Image style={styles.imageView} source={{ uri: apiUrl + item.file }} />
-                            <View>
-                                <Text style={styles.titleStyling}>{item.title}</Text>
-                                <Text numberOfLines={5} style={styles.eventDesc}>{item.description}</Text>
-                            </View>
-                            {item.likes.includes(getProfile._id) ?
-                                <View style={styles.likeIconStyling}>
-                                    <TouchableOpacity onPress={() => updateLikes(item._id)}>
-                                        <Icon
-                                            size={20}
-                                            color='red'
-                                            name="heart"
-                                        />
-                                    </TouchableOpacity>
-                                    <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
-                                </View> :
-                                <View style={styles.likeIconStyling}>
-                                    <TouchableOpacity onPress={() => updateLikes(item._id)}>
+    const ShoweventScreen = () => {
+        return (
+            <SafeAreaView>
+                <FlatList
+                    data={eventData ? eventData : []}
+                    renderItem={({ item }) => (
+                        <View style={{ justifyContent: 'center', paddingBottom: 20 }}>
+                            <TouchableOpacity onPress={() => { props.navigation.navigate('Details', { 'detailsItem': item }) }}>
+                                <View style={styles.boxcontainer}>
+                                    {(item?.file_type == 'image' || item?.file_type == 'audio') && <Image style={styles.imageView} source={{ uri: apiUrl + item.file }} />}
+                                    {item?.file_type == 'video' && 
+                                    <Video source={{ uri: apiUrl + item?.file }} style={styles.backgroundVideo} />}
+                                    <View>
+                                        <Text style={styles.titleStyling}>{item.title}</Text>
+                                        <Text numberOfLines={5} style={styles.eventDesc}>{item.description}</Text>
+                                    </View>
+                                    {item.likes.includes(getProfile._id) ?
+                                        <View style={styles.likeIconStyling}>
+                                            <TouchableOpacity onPress={() => updateLikes(item._id)}>
+                                                <Icon
+                                                    size={20}
+                                                    color='red'
+                                                    name="heart"
+                                                />
+                                            </TouchableOpacity>
+                                            <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
+                                        </View> :
+                                        <View style={styles.likeIconStyling}>
+                                            <TouchableOpacity onPress={() => updateLikes(item._id)}>
+                                                <Icon
+                                                    size={20}
+                                                    color='#000'
+                                                    name="heart-outline"
+                                                />
+                                            </TouchableOpacity>
+                                            <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
+                                        </View>
+                                    }
+
+                                    <View style={styles.intrestedStyling}>
                                         <Icon
                                             size={20}
                                             color='#000'
-                                            name="heart-outline"
+                                            name="bookmark"
                                         />
-                                    </TouchableOpacity>
-                                    <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
+                                        {item.interested_users.includes(getProfile._id) ?
+                                            <TouchableOpacity onPress={() => updateInterested(item._id)}>
+                                                <Text style={{ marginLeft: 7 }}>Interested</Text>
+                                            </TouchableOpacity> :
+                                            <TouchableOpacity onPress={() => updateInterested(item._id)}>
+                                                <Text style={{ marginLeft: 7 }}>Add to interest</Text>
+                                            </TouchableOpacity>}
+                                    </View>
                                 </View>
-                            }
-
-                            <View style={styles.intrestedStyling}>
-                                <Icon
-                                    size={20}
-                                    color='#000'
-                                    name="bookmark"
-                                />
-                                {item.interested_users.includes(getProfile._id) ?
-                                    <TouchableOpacity onPress={() => updateInterested(item._id)}>
-                                        <Text style={{ marginLeft: 7 }}>Interested</Text>
-                                    </TouchableOpacity> :
-                                    <TouchableOpacity onPress={() => updateInterested(item._id)}>
-                                        <Text style={{ marginLeft: 7 }}>Add to interest</Text>
-                                    </TouchableOpacity>}
-                            </View>
+                            </TouchableOpacity>
                         </View>
-                        </TouchableOpacity>
-                    </View>
-                )}
-            />
-        </SafeAreaView>
-    );
-  }
+                    )}
+                />
+            </SafeAreaView>
+        );
+    }
 
     return (
         <>
@@ -127,17 +129,17 @@ export default EventsScreen = ({props, setHeaderShown}) => {
                 <Stack.Screen
                     name="Events"
                     component={ShoweventScreen}
-                    options={({}) => ({
+                    options={({ }) => ({
                         headerLeft: () => (
                             <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
-                            <Icon
-                                size={30}
-                                style={{ marginRight: 15 }}
-                                name="menu-outline"
-                            />
-                        </TouchableOpacity>
+                                <Icon
+                                    size={30}
+                                    style={{ marginRight: 15 }}
+                                    name="menu-outline"
+                                />
+                            </TouchableOpacity>
                         ),
-                      })}
+                    })}
                 />
                 <Stack.Screen
                     name="Details"
@@ -171,6 +173,10 @@ const styles = StyleSheet.create({
         width: 180,
         fontWeight: '900',
         marginLeft: 5
+    },
+    backgroundVideo: {
+        height:185,
+        width:200
     },
     eventDesc: {
         marginLeft: 5,
