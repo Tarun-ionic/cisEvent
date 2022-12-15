@@ -39,6 +39,15 @@ export default function App() {
     <EventsScreen props={props} setHeaderShown={setHeaderShown} />
   );
 
+  const LikedEventRenderScreen = props => (
+    <LikedEventScreen props={props} setHeaderShown={setHeaderShown} />
+  );
+
+  const MyeventRender = props => (
+    <MyeventScreen props={props} setHeaderShown={setHeaderShown} />
+  );
+
+
 
   return (
     <Provider store={store}>
@@ -71,9 +80,10 @@ export default function App() {
               ),
             }}
           />
-          <Drawer.Screen name="My Events" component={MyeventScreen}
+          <Drawer.Screen name="My Events" component={MyeventRender}
             options={{
               title: 'My Events',
+              headerShown : false,
               drawerIcon: ({ focused, size }) => (
                 <Icon
                   size={20}
@@ -85,9 +95,10 @@ export default function App() {
           />
 
 
-          <Drawer.Screen name="Liked Eevents" component={LikedEventScreen}
+          <Drawer.Screen name="Liked Eevents" component={LikedEventRenderScreen}
             options={{
               title: 'Liked Events',
+              headerShown : false,
               drawerIcon: ({ focused, size }) => (
                 <Icon
                   size={20}

@@ -5,6 +5,8 @@ import {withOutTokenGet, withoutTokenPost, withTokenPost, withTokenGet} from '..
 
 
 export const getEventsData = createAsyncThunk("GET_EVENTS",(reqParam) => withTokenPost(eventApi.EVENTS+'?page=1', reqParam));
+export const getMyEvents = createAsyncThunk("GET_MY_EVENTS",(reqParam) => withTokenPost(eventApi.MY_EVENTS+'?page=1', reqParam));
+export const getLikedEvents = createAsyncThunk("GET_LIKED_EVENTS",(reqParam) => withTokenPost(eventApi.LIKED_EVENTS+'?page=1', reqParam));
 export const getEventLikeUpdate = createAsyncThunk("UPDATE_LIKE",(reqParam) => withTokenPost(eventApi.UPDATELIKE, reqParam));
 export const getEventInterestUpdate = createAsyncThunk("UPDATE_INTEREST_UPDATE",(reqParam) => withTokenPost(eventApi.UPDATE_INTEREST, reqParam));
 
@@ -20,6 +22,7 @@ export const getEventInterestUpdate = createAsyncThunk("UPDATE_INTEREST_UPDATE",
         extraReducers: {
             [getEventsData.pending]: (state, action) => {
                 state.status = "pending";
+                state.data = [];
             },
             [getEventsData.fulfilled]: (state, action) => {
                 state.status = "fulfilled";
@@ -32,6 +35,7 @@ export const getEventInterestUpdate = createAsyncThunk("UPDATE_INTEREST_UPDATE",
             },
             [getEventLikeUpdate.pending]: (state, action) => {
                 state.status = "pending";
+                state.data = [];
             },
             [getEventLikeUpdate.fulfilled]: (state, action) => {
                 state.status = "fulfilled";
@@ -44,6 +48,7 @@ export const getEventInterestUpdate = createAsyncThunk("UPDATE_INTEREST_UPDATE",
             },
             [getEventInterestUpdate.pending]: (state, action) => {
                 state.status = "pending";
+                state.data = [];
             },
             [getEventInterestUpdate.fulfilled]: (state, action) => {
                 state.status = "fulfilled";
@@ -54,10 +59,35 @@ export const getEventInterestUpdate = createAsyncThunk("UPDATE_INTEREST_UPDATE",
                 state.status = "rejected";
                 state.data = action.payload;
             },
+            [getLikedEvents.pending]: (state, action) => {
+                state.status = "pending";
+                state.data = [];
+            },
+            [getLikedEvents.fulfilled]: (state, action) => {
+                state.status = "fulfilled";
+                state.data = action.payload;
+                state.apiName = 'getLikedEvents'
+            },
+            [getLikedEvents.rejected]: (state, action) => {
+                state.status = "rejected";
+                state.data = action.payload;
+            },
+            [getMyEvents.pending]: (state, action) => {
+                state.status = "pending";
+                state.data = [];
+            },
+            [getMyEvents.fulfilled]: (state, action) => {
+                state.status = "fulfilled";
+                state.data = action.payload;
+                state.apiName = 'getMyEvents'
+            },
+            [getMyEvents.rejected]: (state, action) => {
+                state.status = "rejected";
+                state.data = action.payload;
+            },
         
         },
     });
     
     
-// export const {  } = rootReducer.actions;
 export default eventReducer.reducer;

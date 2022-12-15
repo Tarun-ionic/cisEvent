@@ -22,9 +22,9 @@ const Stack = createNativeStackNavigator();
 
 export default EventsScreen = ({ props, setHeaderShown }) => {
     const dispatch = useDispatch();
-    const eventData = useSelector(state => state.events.data?.data.data);
+    const eventData = useSelector(state => state.events?.data?.data?.data);
     const event = useSelector(state => state.events);
-    const getProfile = useSelector(state => state.user.data?.data)
+    const getProfile = useSelector(state => state.user?.data?.data)
 
     useEffect(() => {
         if (eventData?.data?.error) {
@@ -32,9 +32,13 @@ export default EventsScreen = ({ props, setHeaderShown }) => {
         }
     }, [eventData])
 
+
     useEffect(() => {
-        dispatch(getEventsData({}));
-    }, [])
+        const getNavigation = props.navigation.addListener("focus", ()=>{
+            dispatch(getEventsData({}));
+        });
+        return getNavigation;
+    }, [props.navigation]);
 
     useEffect(() => {
         console.log('event ', event)
@@ -56,7 +60,6 @@ export default EventsScreen = ({ props, setHeaderShown }) => {
     );
 
 
-
     const ShoweventScreen = () => {
         return (
             <SafeAreaView>
@@ -73,7 +76,7 @@ export default EventsScreen = ({ props, setHeaderShown }) => {
                                         <Text style={styles.titleStyling}>{item.title}</Text>
                                         <Text numberOfLines={5} style={styles.eventDesc}>{item.description}</Text>
                                     </View>
-                                    {item.likes.includes(getProfile._id) ?
+                                    {item.likes.includes(getProfile?._id) ?
                                         <View style={styles.likeIconStyling}>
                                             <TouchableOpacity onPress={() => updateLikes(item._id)}>
                                                 <Icon
@@ -102,7 +105,7 @@ export default EventsScreen = ({ props, setHeaderShown }) => {
                                             color='#000'
                                             name="bookmark"
                                         />
-                                        {item.interested_users.includes(getProfile._id) ?
+                                        {item.interested_users.includes(getProfile?._id) ?
                                             <TouchableOpacity onPress={() => updateInterested(item._id)}>
                                                 <Text style={{ marginLeft: 7 }}>Interested</Text>
                                             </TouchableOpacity> :
