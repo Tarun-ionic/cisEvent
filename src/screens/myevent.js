@@ -1,21 +1,22 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-    Button,
     View,
     SafeAreaView,
+    TextInput,
     StyleSheet,
     ScrollView,
-    Image,
+    Button,
     Text,
+    Image,
     FlatList,
     TouchableOpacity,
 } from 'react-native';
-// import Icon from 'react-native-vector-icons/FontAwesome';
 import { getEventLikeUpdate, getLikedEvents, getEventInterestUpdate, getMyEvents, getEventsData } from '../slices/event.slice';
 import { useDispatch, useSelector } from 'react-redux';
 const apiUrl = "https://pdng1.elb.cisinlive.com/";
 import EventDetialsScreen from './eventdetails';
+import AddEventModal from './addEvent';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Video from 'react-native-video';
@@ -25,7 +26,14 @@ export default MyeventScreen = ({ props, setHeaderShown }) => {
     const dispatch = useDispatch();
     const eventData = useSelector(state => state.events?.data?.data?.data);
     const event = useSelector(state => state?.events);
-    const getProfile = useSelector(state => state?.user?.data?.data)
+    const getProfile = useSelector(state => state?.user?.data?.data);
+    const [visible, setVisible] = React.useState(false);
+    const [name, onNameChange] = React.useState(null);
+    const [desc, onDescChange] = React.useState(null);
+    const [pickerValue, setpickerValue] = React.useState('');
+    const showModal = () => setVisible(true);
+    const hideModal = () => setVisible(false);
+    const containerStyle = { backgroundColor: 'white' };
 
     useEffect(() => {
         if (eventData?.data?.error) {
@@ -61,11 +69,16 @@ export default MyeventScreen = ({ props, setHeaderShown }) => {
 
     const EventDetailScreen = props => (
         <EventDetialsScreen props={props} setHeaderShown={setHeaderShown} />
+        );
+        
+        const AddEventScree = props => (
+        <AddEventModal props={props} setHeaderShown={setHeaderShown} />
     );
 
+
     const createEvents = () => {
-        console.log('wprksssssss');
-        WrapperComponent();
+        console.log('worksssss');
+        props.navigation.navigate('Add Event') 
     }
 
 
@@ -141,7 +154,6 @@ export default MyeventScreen = ({ props, setHeaderShown }) => {
                         )}
                     />
                 </View>
-
             </SafeAreaView>
         );
     }
@@ -171,6 +183,10 @@ export default MyeventScreen = ({ props, setHeaderShown }) => {
                 <Stack.Screen
                     name="Details"
                     component={EventDetailScreen}
+                />
+                  <Stack.Screen
+                    name="Add Event"
+                    component={AddEventScree}
                 />
             </Stack.Navigator>
 
@@ -224,5 +240,28 @@ const styles = StyleSheet.create({
         bottom: 7,
         right: '2%',
         borderRadius: 5
+    },
+    input: {
+        height: 40,
+        margin: 12,
+        borderWidth: 1,
+        borderColor: 'grey',
+        borderRadius: 5,
+        padding: 10,
+    },
+    pickerStyle: {
+        height: 150,
+        width: "80%",
+        color: '#344953',
+        justifyContent: 'center',
+    },
+    descInput: {
+        height: 100,
+        margin: 12,
+        borderWidth: 1,
+        borderColor: 'grey',
+        borderRadius: 5,
+        padding: 5,
+        textAlignVertical: 'top'
     }
 })
