@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SplashScreen from "react-native-splash-screen";
+
 export default LoginScreen = ({ props, setHeaderShown }) => {
     const dispatch = useDispatch();
     const authData = useSelector(state=>state.auth);
@@ -25,14 +27,24 @@ export default LoginScreen = ({ props, setHeaderShown }) => {
     }
 
     useEffect(()=>{
-        checkUserToken();        
+        checkUserToken();
+        hideSplashScreen();       
     },[])
+
+    const hideSplashScreen = ()=>{
+        setTimeout(()=>{
+            SplashScreen.hide(); 
+        }, 4000)
+    }
+
 
     const checkUserToken = async()=>{
         let getToken =  await AsyncStorage.getItem('accessToken');
         if(getToken && getToken != undefined){
             setHeaderShown(true);
             props.navigation.navigate('Home');
+        } else {
+            setHeaderShown(false);
         }
     }
 
@@ -40,9 +52,7 @@ export default LoginScreen = ({ props, setHeaderShown }) => {
         try {
             const jsonValue = JSON.stringify(value)
             await AsyncStorage.setItem(storageString, jsonValue);
-            console.log('data store in local storgae')
         } catch (e) {
-            console.log('error in storeData', e);
         }
 
     }
@@ -55,7 +65,6 @@ export default LoginScreen = ({ props, setHeaderShown }) => {
                 return JSON.parse(jsonValue);
             }
         } catch (e) {
-            console.log('error in getData', e);
         }
     }
 
@@ -65,7 +74,6 @@ export default LoginScreen = ({ props, setHeaderShown }) => {
         } if(authData?.data?.data) {
             setErrorMessage(false, null);
             setHeaderShown(true);
-            console.log('authData?.data', authData?.data);
             AsyncStorage.setItem('accessToken', authData?.data.data.accessToken)
             // storeData('accessToken', authData?.data.data.accessToken);
             props.navigation.navigate('Home');

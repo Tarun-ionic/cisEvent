@@ -26,11 +26,10 @@ export default EventsScreen = ({ props, setHeaderShown }) => {
     const event = useSelector(state => state.events);
     const getProfile = useSelector(state => state.user?.data?.data)
 
-    useEffect(() => {
-        if (eventData?.data?.error) {
-            console.log('events data ', eventData?.data?.error)
-        }
-    }, [eventData])
+    // useEffect(() => {
+    //     if (eventData?.data?.error) {
+    //     }
+    // }, [eventData])
 
 
     useEffect(() => {
@@ -41,7 +40,6 @@ export default EventsScreen = ({ props, setHeaderShown }) => {
     }, [props.navigation]);
 
     useEffect(() => {
-        console.log('event ', event)
         if (event.status == 'fulfilled' && (event.apiName == 'getLikesUpdate' || event.apiName == 'getInterestUpdate')) {
             dispatch(getEventsData({}));
         }

@@ -31,7 +31,6 @@ export default RegisterScreen = ({ props, setHeaderShown }) => {
     }
 
     useEffect(()=>{
-        console.log('registerData', registerData);
         if(registerData?.data?.error){
             setErrorMessage(true, registerData?.data?.message);
         } else {

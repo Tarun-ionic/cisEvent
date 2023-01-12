@@ -12,7 +12,7 @@ export async function withTokenGet(apiName) {
     url: `${apiUrl + apiName}`,
     headers: await jsonAuthHeader(),
   };
-  const response = await axios.request(reqOptions).catch(error=>error.response);;
+  const response = await axios.request(reqOptions).catch(error=>error.response);
   return response.data;
 }
 

@@ -155,7 +155,7 @@ export default ProfileScreen = ( props ) => {
                                 source={{ uri: apiUrl + imagePath }}
                                 style={styles.sideMenuProfileIcon}
                             /> :  <Image
-                                source={require('../assets/user.png')}
+                                source={require('../assets/user.jpg')}
                                 style={styles.sideMenuProfileIcon}
                             />}
                            
@@ -219,7 +219,7 @@ export default ProfileScreen = ( props ) => {
                             selectedItems={selectedItem}
                             selectText={'   Select language : '+selectedItem}
                             searchInputPlaceholderText="Search language..."
-                            onChangeInput={(text) => console.log(text)}
+                            // onChangeInput={(text) => console.log(text)}
                             altFontFamily="ProximaNova-Light"
                             tagRemoveIconColor="#CCC"
                             tagBorderColor="#CCC"

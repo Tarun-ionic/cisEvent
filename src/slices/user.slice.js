@@ -5,12 +5,14 @@ import {withOutTokenGet, withTokenFormPost ,withoutTokenPost,withTokenPut, withT
 
 
 export const getProfile = createAsyncThunk("GET_PROFILE",() => withTokenGet(userApi.PROFILE));
+export const getAllUsers = createAsyncThunk("GET_ALL_USERS_API",() => withTokenGet(userApi.GET_ALL_USERS));
 export const updateProfileImg = createAsyncThunk("PROFILE_IMG",(reqParam) => withTokenFormPost(userApi.UPLOAD_IMG, reqParam));
 export const updateProfile = createAsyncThunk("PROFILE_UPDATE",(reqParam) => withTokenPut(userApi.UPDATE_PROFILE, reqParam));
 
     const initialState = {
         status: null,
         data: null,
+        userInfo: null,
         apiName : ''
     };
 
@@ -52,6 +54,18 @@ export const updateProfile = createAsyncThunk("PROFILE_UPDATE",(reqParam) => wit
             [updateProfileImg.rejected]: (state, action) => {
                 state.status = "rejected";
                 state.data = action.payload;
+            },
+            [getAllUsers.pending]: (state, action) => {
+                state.status = "pending";
+            },
+            [getAllUsers.fulfilled]: (state, action) => {
+                state.status = "fulfilled";
+                state.userInfo = action.payload;
+                state.apiName = 'getallusers'
+            },
+            [getAllUsers.rejected]: (state, action) => {
+                state.status = "rejected";
+                state.userInfo = action.payload;
             },
         
         },

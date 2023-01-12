@@ -30,8 +30,11 @@ export const getRegister = createAsyncThunk("REGISTER",(params) => withoutTokenP
                 state.data = action.payload;
             },
         },
+        reducers : {
+            logout : ()=> initialState
+        }
     });
     
     
-// export const {  } = rootReducer.actions;
+export const {logout} = rootReducer.actions;
 export default rootReducer.reducer;

@@ -7,6 +7,7 @@ import NotificationsScreen from './src/screens/notification'
 import ProfileScreen from './src/screens/profile'
 import LoginScreen from './src/screens/login'
 import RegisterScreen from './src/screens/register'
+import ChatroomScreen from './src/screens/chatroom'
 import EventsScreen from './src/screens/events'
 import LikedEventScreen from './src/screens/likedevent'
 import MyeventScreen from './src/screens/myevent'
@@ -52,7 +53,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Drawer.Navigator initialRouteName='Login'
+        <Drawer.Navigator initialRouteName='Login' 
           screenOptions={{ swipeEnabled: headerShown, headerShown: headerShown, drawerStyle: { paddingTop: 20 } }}
           drawerContent={(props) => <CustomSidebarMenu {...props} />}>
          
@@ -134,9 +135,24 @@ export default function App() {
               ),
             }}
           />
+             <Drawer.Screen name="Chatroom" component={ChatroomScreen}
+            options={{
+              title: 'Chatroom',
+              headerShown : false,
+              drawerIcon: ({ focused, size }) => (
+                <Icon
+                  size={20}
+                  color={focused ? '#7cc' : '#ccc'}
+                  name="wechat"
+                />
+              ),
+            }}
+          />
 
           <Drawer.Screen name="Register" component={RegisterVal}
             options={{
+              headerShown : false,
+              swipeEnabled : false,
               drawerLabel: () => null,
               title: null,
               drawerIcon: () => null
@@ -144,6 +160,8 @@ export default function App() {
           />
            <Drawer.Screen name="Login" component={PassingValues}
             options={{
+              headerShown : false,
+              swipeEnabled : false,
               drawerLabel: () => null,
               title: null,
               drawerIcon: () => null

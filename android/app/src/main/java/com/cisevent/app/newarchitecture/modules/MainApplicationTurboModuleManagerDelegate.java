@@ -1,4 +1,4 @@
-package com.drawer.newarchitecture.modules;
+package com.cisevent.app.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

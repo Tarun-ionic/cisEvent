@@ -16,7 +16,6 @@ const apiUrl = "https://pdng1.elb.cisinlive.com/";
 
 export default EventDetialsScreen = (props) => {
     let getEventDetaisl = props?.props.route.params.detailsItem;
-    console.log('gettting data ', JSON.stringify(getEventDetaisl))
     return (
         <View style={{ flex: 1, alignItems: 'center', marginTop: 32 }}>
             {getEventDetaisl.file_type == 'image' && <Image style={styles.imageView} source={{ uri: apiUrl + getEventDetaisl?.file }} />}

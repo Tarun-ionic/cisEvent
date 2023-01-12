@@ -28,7 +28,6 @@ export default LikedEventScreen = ({ props, setHeaderShown }) => {
 
     useEffect(() => {
         if (eventData?.data?.error) {
-            console.log('events data ', eventData?.data?.error)
         }
     }, [eventData])
 
@@ -41,7 +40,6 @@ export default LikedEventScreen = ({ props, setHeaderShown }) => {
 
 
     useEffect(() => {
-        console.log('event ', event)
         if (event.status == 'fulfilled' && (event.apiName == 'getLikesUpdate' || event.apiName == 'getInterestUpdate')) {
             dispatch(getLikedEvents({}));
         }

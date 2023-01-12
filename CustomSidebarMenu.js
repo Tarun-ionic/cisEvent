@@ -3,12 +3,15 @@
 
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 import {
   SafeAreaView,
   View,
   StyleSheet,
   TouchableOpacity,
   Image,
+  Alert,
   Text,
   Linking,
 } from 'react-native';
@@ -18,12 +21,37 @@ import {
   DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logout } from './src/slices/auth.slice';
 const apiUrl = "https://pdng1.elb.cisinlive.com/";
 
 
 const CustomSidebarMenu = (props) => {
   const getProfileData = useSelector(state => state.user.data?.data);
+  const dispatch = useDispatch();
+
+
+  const askForLogout =()=>{
+    Alert.alert(
+      'Logout',  
+      'Are you sure want to logout?',  
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => onLogout() }
+      ]
+    );
+  }
+
+  const onLogout = async () => {
+    dispatch(logout());
+    await AsyncStorage.removeItem('accessToken');
+    props.navigation.navigate('Login')
+  }
 
   const navigation = useNavigation();
   return (
@@ -45,21 +73,27 @@ const CustomSidebarMenu = (props) => {
               marginTop: 20,
               textAlign: 'center'
             }}>
-            {getProfileData?.name? getProfileData?.name : 'User Profile'}
+            {getProfileData?.name ? getProfileData?.name : 'User Profile'}
           </Text>
         </View>
       </TouchableOpacity>
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
-      <Text
-        style={{
-          fontSize: 16,
-          textAlign: 'center',
-          color: 'grey'
-        }}>
-        www.aboutreact.com
-      </Text>
+      <View style={{
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+      }}>
+        <TouchableOpacity onPress={() => { askForLogout() }}>
+          <Text
+            style={{fontSize: 16,textAlign: 'center',color: 'red'}}>
+            <Icon size={20} color={'red'} name="sign-out"/> LOGOUT
+          </Text>
+        </TouchableOpacity>
+
+      </View>
+
     </SafeAreaView>
   );
 };

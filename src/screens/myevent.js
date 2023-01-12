@@ -12,7 +12,7 @@ import {
     FlatList,
     TouchableOpacity,
 } from 'react-native';
-import { getEventLikeUpdate, getLikedEvents, getEventInterestUpdate, getMyEvents, getEventsData } from '../slices/event.slice';
+import { getEventLikeUpdate, deleteEvent, getLikedEvents, getEventInterestUpdate, getMyEvents, getEventsData } from '../slices/event.slice';
 import { useDispatch, useSelector } from 'react-redux';
 const apiUrl = "https://pdng1.elb.cisinlive.com/";
 import EventDetialsScreen from './eventdetails';
@@ -21,11 +21,20 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Video from 'react-native-video';
 const Stack = createNativeStackNavigator();
-
 export default MyeventScreen = ({ props, setHeaderShown }) => {
+    console.log('props', props);
+    let getParamDetails = props?.route?.params?.wentBack;
+    if (getParamDetails) {
+        console.log('its on param function');
+
+    }
+
     const dispatch = useDispatch();
     const eventData = useSelector(state => state.events?.data?.data?.data);
     const event = useSelector(state => state?.events);
+
+    // const eventData=[];
+    // const event = {};
     const getProfile = useSelector(state => state?.user?.data?.data);
     const [visible, setVisible] = React.useState(false);
     const [name, onNameChange] = React.useState(null);
@@ -37,30 +46,29 @@ export default MyeventScreen = ({ props, setHeaderShown }) => {
 
     useEffect(() => {
         if (eventData?.data?.error) {
-            console.log('events data ', eventData?.data?.error)
         }
     }, [eventData])
 
     useEffect(() => {
         const getNavigation = props.navigation.addListener("focus", () => {
+            console.log('focus navigate page')
             dispatch(getMyEvents({}));
         });
         return getNavigation;
-    }, [props.navigation]);
+    }, []);
 
     useEffect(() => {
-        console.log('event ', JSON.stringify(event))
-        if (event.status == 'fulfilled' && (event.apiName == 'getLikesUpdate' || event.apiName == 'getInterestUpdate')) {
+        if (event.status == 'fulfilled' && (event.apiName == 'getLikesUpdate' || event.apiName == 'deleteEvent')) {
             dispatch(getMyEvents({}));
         }
     }, [event])
 
-    const WrapperComponent = () => {
-
-    }
-
     const updateLikes = (id) => {
         dispatch(getEventLikeUpdate({ 'id': id }))
+    }
+
+    const deleteEventFunc = (eventId) => {
+        dispatch(deleteEvent({ 'id': eventId }))
     }
 
     const updateInterested = (id) => {
@@ -69,16 +77,15 @@ export default MyeventScreen = ({ props, setHeaderShown }) => {
 
     const EventDetailScreen = props => (
         <EventDetialsScreen props={props} setHeaderShown={setHeaderShown} />
-        );
-        
-        const AddEventScree = props => (
+    );
+
+    const AddEventScree = props => (
         <AddEventModal props={props} setHeaderShown={setHeaderShown} />
     );
 
 
     const createEvents = () => {
-        console.log('worksssss');
-        props.navigation.navigate('Add Event') 
+        props.navigation.navigate('Add Event');
     }
 
 
@@ -98,61 +105,67 @@ export default MyeventScreen = ({ props, setHeaderShown }) => {
                         <View style={{ alignItems: 'center', marginTop: '70%', justifyContent: 'center' }}>
                             <Text>No events found !</Text>
                         </View>}
-                    <FlatList
-                        data={eventData ? eventData : []}
-                        renderItem={({ item }) => (
-                            <View style={{ justifyContent: 'center', paddingBottom: 20 }}>
-                                <TouchableOpacity onPress={() => { props.navigation.navigate('Details', { 'detailsItem': item }) }}>
-                                    <View style={styles.boxcontainer}>
-                                        {(item?.file_type == 'image' || item?.file_type == 'audio') && <Image style={styles.imageView} source={{ uri: apiUrl + item.file }} />}
-                                        {item?.file_type == 'video' &&
-                                            <Video source={{ uri: apiUrl + item?.file }} style={styles.backgroundVideo} />}
-                                        <View>
-                                            <Text style={styles.titleStyling}>{item.title}</Text>
-                                            <Text numberOfLines={5} style={styles.eventDesc}>{item.description}</Text>
-                                        </View>
-                                        {item.likes.includes(getProfile?._id) ?
-                                            <View style={styles.likeIconStyling}>
-                                                <TouchableOpacity onPress={() => updateLikes(item._id)}>
-                                                    <Icon
-                                                        size={20}
-                                                        color='red'
-                                                        name="heart"
-                                                    />
-                                                </TouchableOpacity>
-                                                <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
-                                            </View> :
-                                            <View style={styles.likeIconStyling}>
-                                                <TouchableOpacity onPress={() => updateLikes(item._id)}>
+                    <View style={{marginBottom:100}}>
+                        <FlatList
+                            data={eventData ? eventData : []}
+                            renderItem={({ item }) => (
+                                <View style={{ justifyContent: 'center', paddingBottom: 20 }}>
+                                    <TouchableOpacity onPress={() => { props.navigation.navigate('Details', { 'detailsItem': item }) }}>
+                                        <View style={styles.boxcontainer}>
+                                            {(item?.file_type == 'image' || item?.file_type == 'audio') && <Image style={styles.imageView} source={{ uri: apiUrl + item.file }} />}
+                                            {item?.file_type == 'video' &&
+                                                <Video source={{ uri: apiUrl + item?.file }} style={styles.backgroundVideo} />}
+                                            <View>
+                                                <Text style={styles.titleStyling}>{item.title}</Text>
+                                                <Text numberOfLines={5} style={styles.eventDesc}>{item.description}</Text>
+                                            </View>
+                                            {item.likes.includes(getProfile?._id) ?
+                                                <View style={styles.likeIconStyling}>
+                                                    <TouchableOpacity onPress={() => updateLikes(item._id)}>
+                                                        <Icon
+                                                            size={20}
+                                                            color='red'
+                                                            name="heart"
+                                                        />
+                                                    </TouchableOpacity>
+                                                    <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
+                                                </View> :
+                                                <View style={styles.likeIconStyling}>
+                                                    <TouchableOpacity onPress={() => updateLikes(item._id)}>
+                                                        <Icon
+                                                            size={20}
+                                                            color='#000'
+                                                            name="heart-outline"
+                                                        />
+                                                    </TouchableOpacity>
+                                                    <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
+                                                </View>
+                                            }
+
+                                            <View style={styles.intrestedStyling}>
+                                                <TouchableOpacity onPress={() => updateInterested(item._id)}>
                                                     <Icon
                                                         size={20}
                                                         color='#000'
-                                                        name="heart-outline"
+                                                        name="pencil"
                                                     />
                                                 </TouchableOpacity>
-                                                <Text style={{ marginLeft: 5 }}>{item.likes.length}</Text>
                                             </View>
-                                        }
-
-                                        <View style={styles.intrestedStyling}>
-                                            <Icon
-                                                size={20}
-                                                color='#000'
-                                                name="bookmark"
-                                            />
-                                            {item.interested_users.includes(getProfile?._id) ?
-                                                <TouchableOpacity onPress={() => updateInterested(item._id)}>
-                                                    <Text style={{ marginLeft: 7 }}>Interested</Text>
-                                                </TouchableOpacity> :
-                                                <TouchableOpacity onPress={() => updateInterested(item._id)}>
-                                                    <Text style={{ marginLeft: 7 }}>Add to interest</Text>
-                                                </TouchableOpacity>}
+                                            <View style={styles.deleteStyling}>
+                                                <TouchableOpacity onPress={() => deleteEventFunc(item._id)}>
+                                                    <Icon
+                                                        size={20}
+                                                        color='red'
+                                                        name="trash-sharp"
+                                                    />
+                                                </TouchableOpacity>
+                                            </View>
                                         </View>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                    />
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        />
+                    </View>
                 </View>
             </SafeAreaView>
         );
@@ -184,9 +197,9 @@ export default MyeventScreen = ({ props, setHeaderShown }) => {
                     name="Details"
                     component={EventDetailScreen}
                 />
-                  <Stack.Screen
+                <Stack.Screen
                     name="Add Event"
-                    component={AddEventScree}
+                    component={AddEventModal}
                 />
             </Stack.Navigator>
 
@@ -234,11 +247,18 @@ const styles = StyleSheet.create({
     },
     intrestedStyling: {
         position: 'absolute',
-        borderWidth: 1,
         padding: 5,
         flexDirection: 'row',
         bottom: 7,
         right: '2%',
+        borderRadius: 5
+    },
+    deleteStyling: {
+        position: 'absolute',
+        padding: 5,
+        flexDirection: 'row',
+        bottom: 7,
+        right: '15%',
         borderRadius: 5
     },
     input: {
